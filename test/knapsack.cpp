@@ -27,7 +27,7 @@ public:
         throw std::runtime_error{"mismatching sizes"};
   }
 
-  auto evaluate(const individual_type& x, generator_type&) const
+  auto evaluate(const individual_type& x, generator_type&) const -> std::array<double, 2u>
   {
     auto result = std::array<double, 2u>{};
     const auto overweight = weights[x].sum() > capacity;
@@ -35,7 +35,7 @@ public:
     for (auto i = 0ul; i < 2u; ++i)
       result[i] = overweight ? 0.0 : -values[i][x].sum();
 
-    return result[0] + result[1];
+    return {{result[0], result[1]}};
   }
 
   auto mutate(individual_type& x, generator_type& g) const -> void
@@ -133,7 +133,7 @@ TEST_CASE("Knapsack", "")
     for (auto allele : solution.x)
       std::cout << (allele ? 1 : 0);
     std::cout << "\tf(x) = [";
-    std::cout << ' ' << -solution.fitness;
+    std::cout << ' ' << -solution.fitness[0] << ' ' << -solution.fitness[1];
     std::cout << " ]\n";
   }
 }

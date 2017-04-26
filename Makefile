@@ -1,4 +1,4 @@
-HEADERS := $(shell find spea2 -name \*.hpp)
+HEADERS := $(shell find ga -name \*.hpp)
 SRC := $(shell find test -name \*.cpp) $(HEADERS)
 
 all: test

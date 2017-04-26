@@ -2,7 +2,6 @@
 #define SPEA2_ALGORITHM_HPP
 
 #include <ga/meta.hpp>
-#include <ga/utilities.hpp>
 
 #include <algorithm>
 #include <array>
@@ -29,12 +28,13 @@ template <typename T> class algorithm<T, meta::requires<meta::Problem<T>>>
 {
   using individual_type = typename T::individual_type;
   using generator_type = typename T::generator_type;
+  using fitness_type = meta::evaluate_result<T>;
 
 public:
   struct solution_type
   {
     individual_type x;
-    double fitness;
+    fitness_type fitness;
   };
 
   algorithm(T problem, std::vector<individual_type> population, std::size_t elite_count,
@@ -49,8 +49,8 @@ public:
     population_.reserve(population.size());
     next_population_.reserve(population.size() - elite_count_);
 
-    std::transform(population.begin(), population.end(),
-                   back_inserter(population_), [&](auto& x) -> solution_type {
+    std::transform(population.begin(), population.end(), back_inserter(population_),
+                   [&](auto& x) -> solution_type {
                      const auto fitness = problem_.evaluate(x, generator_);
                      return {std::move(x), fitness};
                    });
@@ -62,12 +62,14 @@ public:
   {
     // == Mating Selection, Recombination and Mutation ==
     // We perform binary tournament selection with replacement.
-    auto indexes = std::uniform_int_distribution<std::size_t>(0u, population_.size() - 1u);
+    auto indexes =
+      std::uniform_int_distribution<std::size_t>(0u, population_.size() - 1u);
 
     const auto binary_tournament = [&]() -> const individual_type& {
       const auto i = sample_from(indexes);
       const auto j = sample_from(indexes);
-      return population_[i].fitness < population_[j].fitness ? population_[i].x : population_[j].x;
+      return population_[i].fitness < population_[j].fitness ? population_[i].x
+                                                             : population_[j].x;
     };
 
     while (next_population_.size() < population_.size() - elite_count_)
@@ -110,7 +112,7 @@ private:
   auto sort_population()
   {
     std::sort(population_.begin(), population_.end(),
-        [](const auto& a, const auto& b) { return a.fitness < b.fitness; });
+              [](const auto& a, const auto& b) { return a.fitness < b.fitness; });
   }
 
   template <typename Distribution> auto sample_from(Distribution& dist)
