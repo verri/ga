@@ -1,0 +1,6 @@
+---
+Checks: >
+  modernize-*,performance-*,clang-analyzer-*,clang-diagnostic-*,cert-*,misc-*,-misc-definitions-in-headers,-misc-unused-using-decls
+HeaderFilterRegex: ''
+AnalyzeTemporaryDtors: true
+...
