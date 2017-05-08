@@ -113,8 +113,9 @@ public:
 private:
   auto sort_population()
   {
-    std::sort(population_.begin(), population_.end(),
-              [](const auto& a, const auto& b) { return a.fitness < b.fitness; });
+    std::partial_sort(population_.begin(), population_.begin() + elite_count_,
+                      population_.end(),
+                      [](const auto& a, const auto& b) { return a.fitness < b.fitness; });
   }
 
   template <typename Distribution> auto sample_from(Distribution& dist)
