@@ -108,6 +108,8 @@ public:
   auto generator() -> generator_type& { return generator_; }
   auto generator() const -> const generator_type& { return generator_; }
 
+  auto elite_count() const { return elite_count_; }
+
 private:
   auto sort_population()
   {
