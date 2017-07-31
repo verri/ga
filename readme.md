@@ -25,7 +25,7 @@ public:
     -> /* see below */;
 
   auto recombine(const individual_type&, const individual_type&, generator_type&)
-    -> /* see below */
+    -> /* see below */;
 
   auto mutate(individual_type&, generator_type&)
     -> void;
@@ -86,7 +86,7 @@ int main()
   // ===== Retrieve solution information ===== //
 
   // Every candidate solution in the population sorted by fitness.
-  for (const ga::algorithm<problem>::solution_type& solution : algorithm.populated())
+  for (const ga::algorithm<problem>::solution_type& solution : algorithm.population())
   {
     const problem::individual_type& x = solution.x;
     const auto& fitness = solution.fitness;
