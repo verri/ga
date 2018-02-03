@@ -1,6 +1,5 @@
 #include "ga/algorithm.hpp"
 
-#include <catch.hpp>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -71,7 +70,7 @@ auto operator<<(std::ostream& os, const ga::algorithm<problem>::solution_type& s
   return os << s.x << ",\tfitness = " << s.fitness;
 }
 
-TEST_CASE("Simple test problem", "[foobar]")
+int main()
 {
   auto initial_population = std::vector<individual>{};
   auto generator = std::mt19937{17u};

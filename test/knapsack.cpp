@@ -1,7 +1,5 @@
 #include "ga/algorithm.hpp"
 
-#include <catch.hpp>
-
 #include <algorithm>
 #include <iostream>
 #include <random>
@@ -24,7 +22,7 @@ public:
   {
     const auto size = this->weights.size();
     for (const auto& v : this->values)
-      if (v.size() != this->weights.size())
+      if (v.size() != size)
         throw std::runtime_error{"mismatching sizes"};
   }
 
@@ -92,7 +90,7 @@ static auto generate_random_vector(std::size_t size, F f)
   return result;
 }
 
-TEST_CASE("Knapsack", "")
+int main()
 {
   static constexpr auto item_count = 50u;
   static constexpr auto generation_count = 100u;
