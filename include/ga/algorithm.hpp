@@ -53,7 +53,7 @@ public:
     , generator_(std::move(generator))
   {
     if (elite_count_ >= population.size())
-      throw std::runtime_error{"elite count is greater than population size"};
+      throw std::invalid_argument{"invalid elite_count"};
 
     population_.reserve(population.size());
     next_population_.reserve(population.size() - elite_count_);

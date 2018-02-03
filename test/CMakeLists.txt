@@ -1,6 +1,6 @@
 option(GA_TEST_COVERAGE "whether or not add coverage instrumentation" OFF)
 
-foreach(_test simple knapsack)
+foreach(_test simplest simple knapsack)
   add_executable(ga_${_test} ${_test}.cpp)
   set_target_properties(ga_${_test} PROPERTIES CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
 
