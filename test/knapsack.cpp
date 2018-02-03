@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 #include <valarray>
+#include <iomanip>
 
 class knapsack
 {

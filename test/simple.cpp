@@ -3,6 +3,7 @@
 #include <catch.hpp>
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 
 static auto pow6(double x) -> double { return x * x * x * x * x * x; }
 static auto square(double x) -> double { return x * x; }

@@ -1,12 +1,8 @@
-HEADERS := $(shell find ga -name \*.hpp)
-SRC := $(shell find test -name \*.cpp) $(HEADERS)
+HEADERS := $(shell find include -name \*.[ch]pp -not -name undef\*)
+SRC := $(shell find test -name \*.[ch]pp) $(HEADERS)
 
-all: test
-
-test:
-	@$(MAKE) --no-print-directory -C test
-	@echo "Running test suite..."
-	@valgrind --error-exitcode=1 --leak-check=full test/test_suite -d yes
+all:
+	@echo Please, use CMake instead.
 
 format:
 	@echo Formatting source...
@@ -14,9 +10,12 @@ format:
 
 tidy:
 	@echo Tidying source...
-	@clang-tidy $(HEADERS) -fix -fix-errors -- -std=c++11 -I.
+	@clang-tidy $(HEADERS) -fix -fix-errors -- -std=c++11 -Iinclude
 
 clean:
-	@$(MAKE) --no-print-directory -C test clean
+	@echo Cleaning gcov files...
+	@find . -name '*.gcno' -exec rm {} \;
+	@find . -name '*.gcda' -exec rm {} \;
+	@find . -name '*.gcov' -exec rm {} \;
 
-.PHONY: format test clean tidy
+.PHONY: format clean tidy
