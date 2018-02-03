@@ -44,8 +44,8 @@ private:
   generator_type generator_;
 
 public:
-  algorithm(T problem, std::vector<individual_type> population, const std::size_t elite_count,
-            generator_type generator)
+  algorithm(T problem, std::vector<individual_type> population,
+            const std::size_t elite_count, generator_type generator)
     : problem_(std::move(problem))
     , elite_count_(elite_count)
     , generator_(std::move(generator))
@@ -107,7 +107,10 @@ public:
     sort_population();
   }
 
-  auto population() const noexcept -> const std::vector<solution_type>& { return population_; }
+  auto population() const noexcept -> const std::vector<solution_type>&
+  {
+    return population_;
+  }
 
   auto problem() noexcept -> T& { return problem_; }
   auto problem() const noexcept -> const T& { return problem_; }

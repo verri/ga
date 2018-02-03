@@ -61,7 +61,7 @@ using std::begin;
 using std::end;
 
 template <typename T> using begin_result = decltype(begin(std::declval<T&>()));
-template <typename T> using end_result = decltype(begin(std::declval<T&>()));
+template <typename T> using end_result = decltype(end(std::declval<T&>()));
 
 template <typename T> using has_begin = meta::compiles<T, begin_result>;
 template <typename T> using has_end = meta::compiles<T, end_result>;
