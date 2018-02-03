@@ -1,10 +1,10 @@
 #include "ga/algorithm.hpp"
 
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <random>
 #include <valarray>
-#include <iomanip>
 
 class knapsack
 {
@@ -14,8 +14,8 @@ public:
 
   knapsack(std::array<std::valarray<double>, 2u> values, std::valarray<double> weights,
            double capacity, double mutation_rate, double recombination_rate)
-    : values{std::move(values)}
-    , weights{std::move(weights)}
+    : values(std::move(values))
+    , weights(std::move(weights))
     , capacity{capacity}
     , mutation_rate{mutation_rate}
     , recombination_rate{recombination_rate}
@@ -28,13 +28,16 @@ public:
 
   auto evaluate(const individual_type& x, generator_type&) const -> std::array<double, 2u>
   {
-    auto result = std::array<double, 2u>{};
-    const auto overweight = weights[x].sum() > capacity;
+    auto result = std::array<double, 2u>{{0.0, 0.0}};
 
-    for (auto i = 0ul; i < 2u; ++i)
-      result[i] = overweight ? 0.0 : -values[i][x].sum();
+    // Not overweight
+    if (weights[x].sum() <= capacity)
+    {
+      result[0] = -values[0][x].sum();
+      result[1] = -values[1][x].sum();
+    }
 
-    return {{result[0], result[1]}};
+    return result;
   }
 
   auto mutate(individual_type& x, generator_type& g) const -> void
