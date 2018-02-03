@@ -21,7 +21,8 @@ template <typename B> struct conjunction<B> : B
 };
 
 template <typename B, typename... Bs>
-struct conjunction<B, Bs...> : std::conditional_t<bool(B::value), conjunction<Bs...>, B>
+struct conjunction<B, Bs...>
+  : std::conditional<bool(B::value), conjunction<Bs...>, B>::type
 {
 };
 
@@ -48,10 +49,10 @@ struct compiles<T, Expression, void_t<Expression<T>>> : std::true_type
 };
 
 template <typename... Checks>
-using requires = std::enable_if_t<conjunction<Checks...>::value>;
+using requires = typename std::enable_if<conjunction<Checks...>::value>::type;
 
 template <typename... Checks>
-using fallback = std::enable_if_t<conjunction<negation<Checks>...>::value>;
+using fallback = typename std::enable_if<conjunction<negation<Checks>...>::value>::type;
 
 // based on http://stackoverflow.com/questions/13830158/check-if-a-variable-is-iterable
 namespace detail

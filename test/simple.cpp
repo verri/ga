@@ -4,16 +4,16 @@
 #include <cmath>
 #include <iostream>
 
-static auto pow6(double x) { return x * x * x * x * x * x; }
-static auto square(double x) { return x * x; }
-static auto f1(double x)
+static auto pow6(double x) -> double { return x * x * x * x * x * x; }
+static auto square(double x) -> double { return x * x; }
+static auto f1(double x) -> double
 {
   return 1 - std::exp(-4.0 * x) * pow6(std::sin(6.0 * 3.1415 * x));
 }
-static auto g(double x) { return 1.0 + 9 * std::pow(x, 0.25); }
-static auto f2(double x) { return g(x) * (1.0 - square(f1(x) / g(x))); }
+static auto g(double x) -> double { return 1.0 + 9 * std::pow(x, 0.25); }
+static auto f2(double x) -> double { return g(x) * (1.0 - square(f1(x) / g(x))); }
 
-template <typename G> static auto drand(G& g)
+template <typename G> static auto drand(G& g) -> double
 {
   return std::generate_canonical<double, std::numeric_limits<double>::digits>(g);
 }
@@ -44,7 +44,10 @@ public:
   using individual_type = individual;
   using generator_type = std::mt19937;
 
-  auto evaluate(const individual_type& x, generator_type&) const { return f1(x) + f2(x); }
+  auto evaluate(const individual_type& x, generator_type&) const -> double
+  {
+    return f1(x) + f2(x);
+  }
 
   auto mutate(individual_type& x, generator_type& g) const -> void
   {

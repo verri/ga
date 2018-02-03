@@ -72,16 +72,20 @@ private:
 static_assert(ga::meta::Problem<knapsack>::value,
               "Knapsack problem doesn't comply with ga::Problem concept");
 
-template <typename F> static auto generate_random_valarray(std::size_t size, F f)
+template <typename F>
+static auto generate_random_valarray(std::size_t size, F f)
+  -> std::valarray<typename std::result_of<F()>::type>
 {
-  auto result = std::valarray<std::result_of_t<F()>>(size);
+  auto result = std::valarray<typename std::result_of<F()>::type>(size);
   std::generate_n(begin(result), size, std::move(f));
   return result;
 }
 
-template <typename F> static auto generate_random_vector(std::size_t size, F f)
+template <typename F>
+static auto generate_random_vector(std::size_t size, F f)
+  -> std::vector<typename std::result_of<F()>::type>
 {
-  auto result = std::vector<std::result_of_t<F()>>();
+  auto result = std::vector<typename std::result_of<F()>::type>();
   result.reserve(size);
   std::generate_n(back_inserter(result), size, std::move(f));
   return result;

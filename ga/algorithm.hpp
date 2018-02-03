@@ -13,7 +13,7 @@
 namespace ga
 {
 
-template <typename G> static auto draw(double rate, G& g)
+template <typename G> static auto draw(double rate, G& g) -> bool
 {
   return std::generate_canonical<double, std::numeric_limits<double>::digits>(g) < rate;
 }
@@ -37,6 +37,13 @@ public:
     fitness_type fitness;
   };
 
+private:
+  T problem_;
+  std::vector<solution_type> population_, next_population_;
+  std::size_t elite_count_;
+  generator_type generator_;
+
+public:
   algorithm(T problem, std::vector<individual_type> population, std::size_t elite_count,
             generator_type generator)
     : problem_(std::move(problem))
@@ -50,7 +57,7 @@ public:
     next_population_.reserve(population.size() - elite_count_);
 
     std::transform(population.begin(), population.end(), back_inserter(population_),
-                   [&](auto& x) -> solution_type {
+                   [&](individual_type& x) -> solution_type {
                      const auto fitness = problem_.evaluate(x, generator_);
                      return {std::move(x), fitness};
                    });
@@ -108,28 +115,24 @@ public:
   auto generator() -> generator_type& { return generator_; }
   auto generator() const -> const generator_type& { return generator_; }
 
-  auto elite_count() const { return elite_count_; }
+  auto elite_count() const -> std::size_t { return elite_count_; }
 
 private:
-  auto sort_population()
+  auto sort_population() -> void
   {
     std::partial_sort(population_.begin(), population_.begin() + elite_count_,
                       population_.end(),
-                      [](const auto& a, const auto& b) { return a.fitness < b.fitness; });
+                      [](const solution_type& a, const solution_type& b) {
+                        return a.fitness < b.fitness;
+                      });
   }
 
-  template <typename Distribution> auto sample_from(Distribution& dist)
+  template <typename Distribution>
+  auto sample_from(Distribution& dist) ->
+    typename std::decay<decltype(dist(this->generator_))>::type
   {
     return dist(generator_);
   }
-
-  T problem_;
-
-  std::vector<solution_type> population_, next_population_;
-
-  const std::size_t elite_count_;
-
-  generator_type generator_;
 };
 
 template <typename T, typename I, typename G, typename = meta::requires<meta::Problem<T>>>
@@ -140,7 +143,7 @@ auto make_algorithm(T problem, std::vector<I> population, std::size_t elite_coun
 }
 
 template <typename T, typename... Args, typename = meta::fallback<meta::Problem<T>>>
-auto make_algorithm(T, Args&&...)
+auto make_algorithm(T, Args&&...) -> void
 {
   static_assert(meta::always_false<T>::value,
                 "Problem type doesn't complies with the required concept");

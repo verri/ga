@@ -4,7 +4,7 @@ This is a header-only, generic C++ implementation of a standard genetic algorith
 
 ## Requirements
 
-To use the library, you will need a C++14-compliant compiler.
+To use the library, you will need a C++11-compliant compiler.
 
 ## Documentation
 
@@ -195,11 +195,5 @@ For the complete source code see [knapsack.cpp](https://github.com/verri/ga/blob
 
 ## Contributing
 
-The library should be flexible enough to work in most of the common cases,
+The library should be flexible and efficient enough to work in most of the common cases,
 but if it doesn't fit into your problem, please let me know (or send me a pull request).
-
-Pull requests are welcomed, especially for
-
-- performance optimizations
-- C++11 compliance
-  - that should be possible with only few tweaks

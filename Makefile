@@ -14,7 +14,7 @@ format:
 
 tidy:
 	@echo Tidying source...
-	@clang-tidy $(HEADERS) -fix -fix-errors -- -std=c++1z -I.
+	@clang-tidy $(HEADERS) -fix -fix-errors -- -std=c++11 -I.
 
 clean:
 	@$(MAKE) --no-print-directory -C test clean
