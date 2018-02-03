@@ -1,5 +1,7 @@
-#ifndef SPEA2_ALGORITHM_HPP
-#define SPEA2_ALGORITHM_HPP
+// Copyright (c) 2017-2018 Filipe Verri <filipeverri@gmail.com>
+
+#ifndef GA_ALGORITHM_HPP
+#define GA_ALGORITHM_HPP
 
 #include <ga/meta.hpp>
 
@@ -154,4 +156,4 @@ auto make_algorithm(T, Args&&...) -> void
 
 } // namespace ga
 
-#endif // SPEA2_ALGORITHM_HPP
+#endif // GA_ALGORITHM_HPP

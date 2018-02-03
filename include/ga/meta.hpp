@@ -1,5 +1,7 @@
-#ifndef SPEA2_META_HPP
-#define SPEA2_META_HPP
+// Copyright (c) 2017-2018 Filipe Verri <filipeverri@gmail.com>
+
+#ifndef GA_META_HPP
+#define GA_META_HPP
 
 #include <array>
 #include <type_traits>
@@ -134,4 +136,4 @@ struct Problem<
 } // namespace meta
 } // namespace ga
 
-#endif // SPEA2_META_HPP
+#endif // GA_META_HPP

@@ -1,0 +1,19 @@
+// Copyright (c) 2018 Filipe Verri <filipeverri@gmail.com>
+
+#ifndef GA_VERSION_HPP
+/// \exclude
+#define GA_VERSION_HPP
+
+namespace ga
+{
+namespace version
+{
+
+constexpr auto major = @GA_VERSION_MAJOR@;
+constexpr auto minor = @GA_VERSION_MINOR@;
+constexpr auto patch = @GA_VERSION_PATCH@;
+
+} // namespace version
+} // namespace ga
+
+#endif // GA_VERSION_HPP
