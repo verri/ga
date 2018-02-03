@@ -9,7 +9,6 @@ namespace ga
 namespace meta
 {
 
-// TODO: In C++17, use std version.
 template <typename...> using void_t = void;
 
 template <typename...> struct conjunction : std::true_type

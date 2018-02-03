@@ -21,7 +21,7 @@ template <typename G> static auto draw(double rate, G& g) -> bool
 template <typename T, typename E = void> class algorithm
 {
   static_assert(meta::always_false<T>::value,
-                "Problem type doesn't complies with the required concept");
+                "Problem type doesn't comply with the required concept");
 };
 
 template <typename T> class algorithm<T, meta::requires<meta::Problem<T>>>
@@ -136,7 +136,7 @@ private:
 };
 
 template <typename T, typename I, typename G, typename = meta::requires<meta::Problem<T>>>
-auto make_algorithm(T problem, std::vector<I> population, std::size_t elite_count,
+auto make_algorithm(T problem, std::vector<I> population, const std::size_t elite_count,
                     G generator) -> algorithm<T>
 {
   return {std::move(problem), std::move(population), elite_count, std::move(generator)};
@@ -146,7 +146,7 @@ template <typename T, typename... Args, typename = meta::fallback<meta::Problem<
 auto make_algorithm(T, Args&&...) -> void
 {
   static_assert(meta::always_false<T>::value,
-                "Problem type doesn't complies with the required concept");
+                "Problem type doesn't comply with the required concept");
 }
 
 } // namespace ga
