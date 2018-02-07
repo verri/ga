@@ -43,6 +43,7 @@ class problem
 public:
   using individual_type = individual;
   using generator_type = std::mt19937;
+  using fitness_type = double;
 
   auto evaluate(const individual_type& x, generator_type&) const -> double
   {

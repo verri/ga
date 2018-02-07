@@ -16,17 +16,24 @@ template <typename T, typename E = void> class problem
                 "Problem type doesn't comply with the required concept");
 };
 
-template <typename T> class problem<T, meta::requires<meta::Problem<T>>> : private T {
+template <typename T> class problem<T, meta::requires<meta::Problem<T>>> : private T
+{
 public:
+  using T::evaluate;
   using T::mutate;
   using T::recombine;
-  using T::evaluate;
 
-  operator const T&() const { return *this; }
-  operator T&() { return *this; }
+  constexpr operator const T&() const noexcept { return *this; }
+  operator T&() noexcept { return *this; }
 
-  problem(const T& t) : T(t) {}
-  problem(T&& t) : T(std::move(t)) {}
+  constexpr problem(const T& t)
+    : T(t)
+  {
+  }
+  constexpr problem(T&& t) noexcept
+    : T(std::move(t))
+  {
+  }
 };
 
 } // namespace detail

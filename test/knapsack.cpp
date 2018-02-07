@@ -11,6 +11,7 @@ class knapsack
 public:
   using individual_type = std::valarray<bool>;
   using generator_type = std::mt19937;
+  using fitness_type = std::array<double, 2u>;
 
   knapsack(std::array<std::valarray<double>, 2u> values, std::valarray<double> weights,
            double capacity, double mutation_rate, double recombination_rate)

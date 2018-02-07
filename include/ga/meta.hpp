@@ -3,8 +3,11 @@
 #ifndef GA_META_HPP
 #define GA_META_HPP
 
+#include <ga/type.hpp>
+
 #include <array>
 #include <type_traits>
+#include <vector>
 
 namespace ga
 {
@@ -24,6 +27,20 @@ template <typename B> struct conjunction<B> : B
 template <typename B, typename... Bs>
 struct conjunction<B, Bs...>
   : std::conditional<bool(B::value), conjunction<Bs...>, B>::type
+{
+};
+
+template <typename...> struct disjunction : std::false_type
+{
+};
+
+template <class B> struct disjunction<B> : B
+{
+};
+
+template <class B, class... Bs>
+struct disjunction<B, Bs...>
+  : std::conditional<bool(B::value), B, disjunction<Bs...>>::type
 {
 };
 
@@ -117,17 +134,50 @@ using evaluate_result =
 
 template <typename T> using has_evaluate = meta::compiles<T, evaluate_result>;
 
+template <typename T>
+using multi_evaluate_result = decltype(std::declval<T&>().evaluate(
+  std::declval<std::vector<
+    ::ga::solution<typename T::individual_type, typename T::fitness_type>>&>(),
+  std::declval<typename T::generator_type&>()));
+
+template <typename T> using has_multi_evaluate = meta::compiles<T, multi_evaluate_result>;
+
+template <typename T, typename = void> struct SingleEvaluation : std::false_type
+{
+};
+
+template <typename T>
+struct SingleEvaluation<
+  T, requires<conjunction<has_evaluate<T>,
+                          std::is_same<typename T::fitness_type, evaluate_result<T>>>>>
+  : std::true_type
+{
+};
+
+template <typename T, typename = void> struct MultiEvaluation : std::false_type
+{
+};
+
+template <typename T>
+struct MultiEvaluation<
+  T, requires<
+       conjunction<has_multi_evaluate<T>, std::is_same<void, multi_evaluate_result<T>>>>>
+  : std::true_type
+{
+};
+
 template <typename T, typename = void> struct Problem : std::false_type
 {
 };
 
 template <typename T>
 struct Problem<
-  T,
-  requires<conjunction<
-    has_mutate<T>, std::is_same<mutate_result<T>, void>, has_recombine<T>,
-    has_evaluate<T>, has_comparison<evaluate_result<T>>, Iterable<recombine_result<T>>,
-    std::is_same<typename T::individual_type, typename recombine_result<T>::value_type>>>>
+  T, requires<conjunction<has_mutate<T>, std::is_same<mutate_result<T>, void>,
+                          has_recombine<T>, Iterable<recombine_result<T>>,
+                          std::is_same<typename T::individual_type,
+                                       typename recombine_result<T>::value_type>,
+                          has_comparison<typename T::fitness_type>,
+                          disjunction<SingleEvaluation<T>, MultiEvaluation<T>>>>>
   : std::true_type
 {
 };

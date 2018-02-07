@@ -5,6 +5,7 @@ class problem
 public:
   using individual_type = int;
   using generator_type = std::mt19937;
+  using fitness_type = double;
 
   auto evaluate(int x, generator_type&) const -> double { return x; }
 

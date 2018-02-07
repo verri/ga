@@ -5,6 +5,7 @@
 
 #include <ga/meta.hpp>
 #include <ga/problem.hpp>
+#include <ga/type.hpp>
 
 #include <algorithm>
 #include <array>
@@ -29,16 +30,11 @@ template <typename T, typename E = void> class algorithm
 
 template <typename T> class algorithm<T, meta::requires<meta::Problem<T>>>
 {
+public:
   using individual_type = typename T::individual_type;
   using generator_type = typename T::generator_type;
-  using fitness_type = meta::evaluate_result<T>;
-
-public:
-  struct solution_type
-  {
-    individual_type x;
-    fitness_type fitness;
-  };
+  using fitness_type = typename T::fitness_type;
+  using solution_type = solution<individual_type, fitness_type>;
 
 private:
   detail::problem<T> problem_;
@@ -121,6 +117,7 @@ public:
   auto generator() noexcept -> generator_type& { return generator_; }
   auto generator() const noexcept -> const generator_type& { return generator_; }
 
+  auto elite_count() noexcept -> std::size_t& { return elite_count_; }
   auto elite_count() const noexcept -> std::size_t { return elite_count_; }
 
 private:
