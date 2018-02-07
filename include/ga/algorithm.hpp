@@ -38,7 +38,9 @@ public:
 
 private:
   detail::problem<T> problem_;
-  std::vector<solution_type> population_, next_population_;
+  std::vector<solution_type> population_;
+  std::vector<individual_type> next_population_;
+  std::vector<fitness_type> next_fitness_;
   std::size_t elite_count_;
   generator_type generator_;
 
@@ -54,12 +56,26 @@ public:
 
     population_.reserve(population.size());
     next_population_.reserve(population.size() - elite_count_);
+    next_fitness_.reserve(population.size() - elite_count_);
 
-    std::transform(population.begin(), population.end(), back_inserter(population_),
-                   [&](individual_type& x) -> solution_type {
-                     const auto fitness = problem_.evaluate(x, generator_);
-                     return {std::move(x), fitness};
-                   });
+    {
+      std::vector<fitness_type> first_fitness;
+      first_fitness.reserve(population.size());
+
+      problem_.evaluate(const_cast<const std::vector<individual_type>&>(population),
+                        population_, 0, std::back_inserter(first_fitness), generator_);
+
+      if (first_fitness.size() != population.size() || population_.size() > 0)
+        throw std::runtime_error{"evaluation step has changed expected population size"};
+
+      auto ind_it = population.begin();
+      auto fit_it = first_fitness.begin();
+
+      const auto end = population.end();
+
+      while (ind_it != end)
+        population_.push_back({std::move(*ind_it++), std::move(*fit_it++)});
+    }
 
     sort_population();
   }
@@ -78,7 +94,8 @@ public:
                                                              : population_[j].x;
     };
 
-    while (next_population_.size() < population_.size() - elite_count_)
+    const auto expected_size = population_.size();
+    while (next_population_.size() < expected_size - elite_count_)
     {
       // Two binary tournament to select the parents.
       const auto& parent1 = binary_tournament();
@@ -91,17 +108,34 @@ public:
       for (auto& child : children)
       {
         problem_.mutate(child, generator_);
-        const auto fitness = problem_.evaluate(child, generator_);
-        next_population_.push_back({std::move(child), fitness});
-        if (next_population_.size() == population_.size() - elite_count_)
+        next_population_.push_back(std::move(child));
+        if (next_population_.size() == expected_size - elite_count_)
           break;
       }
     }
 
-    // Copy new individual preserving the elite_count_ best ones.
-    std::move(next_population_.begin(), next_population_.end(),
-              population_.begin() + elite_count_);
+    problem_.evaluate(const_cast<const std::vector<individual_type>&>(next_population_),
+                      population_, elite_count_, std::back_inserter(next_fitness_),
+                      generator_);
+
+    if (population_.size() != expected_size ||
+        next_population_.size() != expected_size - elite_count_ ||
+        next_fitness_.size() != expected_size - elite_count_)
+      throw std::runtime_error{"evaluation step has changed expected population size"};
+
+    {
+      auto ind_it = next_population_.begin();
+      auto fit_it = next_fitness_.begin();
+
+      auto sol_it = population_.begin() + elite_count_;
+      const auto end = population_.end();
+
+      while (sol_it != end)
+        *sol_it++ = solution_type{std::move(*ind_it++), std::move(*fit_it++)};
+    }
+
     next_population_.clear();
+    next_fitness_.clear();
 
     sort_population();
   }

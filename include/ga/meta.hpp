@@ -129,15 +129,18 @@ template <typename T> using has_recombine = meta::compiles<T, recombine_result>;
 
 template <typename T>
 using evaluate_result =
-  decltype(std::declval<T&>().evaluate(std::declval<typename T::individual_type&>(),
+  decltype(std::declval<T&>().evaluate(std::declval<const typename T::individual_type&>(),
                                        std::declval<typename T::generator_type&>()));
 
 template <typename T> using has_evaluate = meta::compiles<T, evaluate_result>;
 
 template <typename T>
 using multi_evaluate_result = decltype(std::declval<T&>().evaluate(
+  std::declval<const std::vector<typename T::individual_type>&>(),
   std::declval<std::vector<
     ::ga::solution<typename T::individual_type, typename T::fitness_type>>&>(),
+  std::declval<std::size_t>(),
+  std::declval<std::back_insert_iterator<std::vector<typename T::fitness_type>>>(),
   std::declval<typename T::generator_type&>()));
 
 template <typename T> using has_multi_evaluate = meta::compiles<T, multi_evaluate_result>;

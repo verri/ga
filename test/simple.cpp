@@ -80,7 +80,7 @@ int main()
   std::generate_n(std::back_inserter(initial_population), initial_population.capacity(),
                   [&] { return drand(generator); });
 
-  auto model = ga::make_algorithm(problem{}, std::move(initial_population), 1u,
+  auto model = ga::make_algorithm(problem{}, std::move(initial_population), 2u,
                                   std::move(generator));
 
   std::cout << std::setprecision(6) << std::fixed;
