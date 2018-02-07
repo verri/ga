@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(GA VERSION 1.0.0)
+project(GA VERSION 2.0.0)
 
 configure_file("include/ga/version.hpp.in" "include/ga/version.hpp")
 
