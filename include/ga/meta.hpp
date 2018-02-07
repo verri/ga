@@ -126,7 +126,6 @@ struct Problem<
   T,
   requires<conjunction<
     has_mutate<T>, std::is_same<mutate_result<T>, void>, has_recombine<T>,
-    std::is_same<recombine_result<T>, std::array<typename T::individual_type, 2u>>,
     has_evaluate<T>, has_comparison<evaluate_result<T>>, Iterable<recombine_result<T>>,
     std::is_same<typename T::individual_type, typename recombine_result<T>::value_type>>>>
   : std::true_type

@@ -4,6 +4,7 @@
 #define GA_ALGORITHM_HPP
 
 #include <ga/meta.hpp>
+#include <ga/problem.hpp>
 
 #include <algorithm>
 #include <array>
@@ -40,7 +41,7 @@ public:
   };
 
 private:
-  T problem_;
+  detail::problem<T> problem_;
   std::vector<solution_type> population_, next_population_;
   std::size_t elite_count_;
   generator_type generator_;
@@ -114,8 +115,8 @@ public:
     return population_;
   }
 
-  auto problem() noexcept -> T& { return problem_; }
-  auto problem() const noexcept -> const T& { return problem_; }
+  auto problem() noexcept -> T& { return static_cast<T&>(problem_); }
+  auto problem() const noexcept -> const T& { return static_cast<const T&>(problem_); }
 
   auto generator() noexcept -> generator_type& { return generator_; }
   auto generator() const noexcept -> const generator_type& { return generator_; }
