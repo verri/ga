@@ -20,9 +20,10 @@ class problem
 public:
   using individual_type = /* ... */;
   using generator_type = /* ... */;
+  using fitness_type = /* ... */;
 
   auto evaluate(individual_type&, generator_type&)
-    -> /* see below */;
+    -> fitness_type;
 
   auto recombine(const individual_type&, const individual_type&, generator_type&)
     -> /* see below */;
@@ -45,7 +46,7 @@ define the functioning of the algorithm.
 execution of the algorithm. It receives the individual to evaluate and a random
 engine, and it must return the fitness value. The type of the fitness value
 must be sortable. That is, given two fitness values `a` and `b`, `a < b` must
-be a valid expression. The algorithm will try to minimize such objectives.
+be a valid expression. The algorithm will try to **minimize** such objectives.
 
 `problem::recombine` is called for every two selected (by binary tournament)
 individuals from the archive to populate the next generation.  It receives
@@ -120,6 +121,7 @@ class knapsack
 public:
   using individual_type = std::valarray<bool>;
   using generator_type = std::mt19937;
+  using fitness_type = std::array<double, 2u>;
 
   knapsack(std::array<std::valarray<double>, 2u> values,
            std::valarray<double> weights, double capacity, double mutation_rate,
@@ -130,7 +132,7 @@ public:
 
   auto evaluate(const individual_type& x, generator_type&) const
   {
-    auto result = std::array<double, 2u>{};
+    auto result = fitness_type{};
     const auto overweight = weights[x].sum() > capacity;
 
     for (auto i = 0ul; i < 2u; ++i)
