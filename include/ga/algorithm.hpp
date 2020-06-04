@@ -4,13 +4,13 @@
 #define GA_ALGORITHM_HPP
 
 #include <ga/meta.hpp>
-#include <ga/problem.hpp>
 #include <ga/type.hpp>
 
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <random>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
@@ -22,13 +22,13 @@ template <typename G> static auto draw(double rate, G& g) -> bool
   return std::generate_canonical<double, std::numeric_limits<double>::digits>(g) < rate;
 }
 
-template <typename T, typename E = void> class algorithm
+template <typename T> class algorithm
 {
   static_assert(meta::always_false<T>::value,
                 "Problem type doesn't comply with the required concept");
 };
 
-template <typename T> class algorithm<T, meta::requires<meta::Problem<T>>>
+template <meta::any_problem T> class algorithm<T>
 {
 public:
   using individual_type = typename T::individual_type;
@@ -37,7 +37,7 @@ public:
   using solution_type = solution<individual_type, fitness_type>;
 
 private:
-  detail::problem<T> problem_;
+  T problem_;
   std::vector<solution_type> population_;
   std::vector<individual_type> next_population_;
   std::vector<fitness_type> next_fitness_;
@@ -62,8 +62,16 @@ public:
       std::vector<fitness_type> first_fitness;
       first_fitness.reserve(population.size());
 
-      problem_.evaluate(const_cast<const std::vector<individual_type>&>(population),
-                        population_, 0, std::back_inserter(first_fitness), generator_);
+      if constexpr (meta::single_evaluation_problem<T>)
+      {
+        for (const auto& individual : population)
+          first_fitness.push_back(problem_.evaluate(individual, generator_));
+      }
+      else
+      {
+        problem_.evaluate(std::as_const(population), population_, 0,
+                          std::back_inserter(first_fitness), generator_);
+      }
 
       if (first_fitness.size() != population.size() || population_.size() > 0)
         throw std::runtime_error{"evaluation step has changed expected population size"};
@@ -114,9 +122,16 @@ public:
       }
     }
 
-    problem_.evaluate(const_cast<const std::vector<individual_type>&>(next_population_),
-                      population_, elite_count_, std::back_inserter(next_fitness_),
-                      generator_);
+    if constexpr (meta::single_evaluation_problem<T>)
+    {
+      for (const auto& individual : next_population_)
+        next_fitness_.push_back(problem_.evaluate(individual, generator_));
+    }
+    else
+    {
+      problem_.evaluate(std::as_const(next_population_), population_, elite_count_,
+                        std::back_inserter(next_fitness_), generator_);
+    }
 
     if (population_.size() != expected_size ||
         next_population_.size() != expected_size - elite_count_ ||
@@ -152,7 +167,7 @@ public:
   auto generator() const noexcept -> const generator_type& { return generator_; }
 
   auto elite_count() noexcept -> std::size_t& { return elite_count_; }
-  auto elite_count() const noexcept -> std::size_t { return elite_count_; }
+  [[nodiscard]] auto elite_count() const noexcept -> std::size_t { return elite_count_; }
 
 private:
   auto sort_population() -> void
@@ -172,18 +187,11 @@ private:
   }
 };
 
-template <typename T, typename I, typename G, typename = meta::requires<meta::Problem<T>>>
+template <meta::any_problem T, typename I, typename G>
 auto make_algorithm(T problem, std::vector<I> population, const std::size_t elite_count,
                     G generator) -> algorithm<T>
 {
   return {std::move(problem), std::move(population), elite_count, std::move(generator)};
-}
-
-template <typename T, typename... Args, typename = meta::fallback<meta::Problem<T>>>
-auto make_algorithm(T, Args&&...) -> void
-{
-  static_assert(meta::always_false<T>::value,
-                "Problem type doesn't comply with the required concept");
 }
 
 } // namespace ga

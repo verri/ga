@@ -72,7 +72,7 @@ private:
   double mutation_rate, recombination_rate;
 };
 
-static_assert(ga::meta::Problem<knapsack>::value,
+static_assert(ga::meta::single_evaluation_problem<knapsack>,
               "Knapsack problem doesn't comply with ga::Problem concept");
 
 template <typename F>

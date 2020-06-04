@@ -5,7 +5,7 @@ configure_file("include/ga/version.hpp.in" "include/ga/version.hpp")
 
 add_library(ga INTERFACE)
 
-target_compile_features(ga INTERFACE cxx_std_11)
+target_compile_features(ga INTERFACE cxx_std_20)
 
 target_include_directories(ga INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
